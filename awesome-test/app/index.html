@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My First Angular Application</title>
+    <style>
+        body {
+            padding-top: 50px;
+        }
+    </style>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <script src="bower_components/angular/angular.min.js"></script>
+    <script src="js/app.js"></script>
+</head>
+<body class="container" ng-app="firstApp" ng-controller="mainController as main">
+<div class="jumpbotron">
+    <h2>This is my message:</h2>
+    {{ main.message }}
+
+    <h2>This is my list:</h2>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <td>Name</td>
+            <td>Color</td>
+            <td>Nerd Level</td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="computer in main.computers">
+            <td>{{ computer.name }}</td>
+            <td>{{ computer.color }}</td>
+            <td>{{ computer.nerdness }}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
