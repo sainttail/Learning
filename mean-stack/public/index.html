@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User CRM</title>
+
+    <base href="/">
+
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+
+    <script src="bower_components/angular/angular.min.js"></script>
+    <script src="bower_components/angular-route/angular-route.min.js"></script>
+    <script src="bower_components/angular-animate/angular-animate.min.js"></script>
+
+    <script src="services/authService.js"></script>
+    <script src="services/userService.js"></script>
+
+    <script src="controllers/mainCtrl.js"></script>
+    <script src="controllers/userCtrl.js"></script>
+
+    <script src="app.js"></script>
+    <script src="app.routes.js"></script>
+</head>
+<body ng-app="userApp" ng-controller="mainController as main">
+<header>
+    <div class="navbar navbar-inverse" ng-if="main.loggedIn">
+        <div class="container">
+            <div class="navbar-header">
+                <a href="/" class="navbar-brand"><span class="glyphicon glyphicon-fire text-danger"></span>User CRM</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li><a href="/users"><span class="glyphicon glyphicon-user"></span>Users</a></li>
+            </ul>
+            <ul class="nav navbar-nav pull-right">
+                <li ng-if="!main.loggedIn"><a href="/login">Login</a></li>
+                <li class="navbar-text" ng-if="main.loggedIn"><a href="/login">Hello {{main.user.name}}</a></li>
+                <li ng-if="main.loggedIn"><a href="#" ng-click="main.doLogout()">Logout</a></li>
+            </ul>
+        </div>
+    </div>
+</header>
+<main class="container">
+    <div ng-view></div>
+</main>
+</body>
+</html>

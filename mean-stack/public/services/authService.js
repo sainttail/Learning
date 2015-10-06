@@ -2,6 +2,23 @@
  * Created by eak on 10/5/15.
  */
 angular.module('authService', [])
+    .factory('AuthToken', function ($window) {
+        var authTokenFactory = {};
+
+        authTokenFactory.getToken = function () {
+            return $window.localStorage.getItem('token');
+        };
+
+        authTokenFactory.setToken = function (token) {
+            if (token) {
+                $window.localStorage.setItem('token', token);
+            } else {
+                $window.localStorage.removeItem('token');
+            }
+        };
+
+        return authTokenFactory;
+    })
     .factory('Auth', function ($http, $q, AuthToken) {
         var authFactory = {};
 
@@ -25,7 +42,7 @@ angular.module('authService', [])
 
         authFactory.getUser = function () {
             if (AuthToken.getToken()) {
-                return $http.get('/api/me');
+                return $http.get('/api/me', {cache: true});
             } else {
                 return $q.reject({
                     message: "User has no token."
@@ -34,23 +51,6 @@ angular.module('authService', [])
         };
 
         return authFactory;
-    })
-    .factory('AuthToken', function ($window) {
-        var authTokenFactory = {};
-
-        authTokenFactory.getToken = function () {
-            return $window.localStorage.getItem('token');
-        };
-
-        authTokenFactory.setToken = function (token) {
-            if (token) {
-                $window.localStorage.setItem('token', token);
-            } else {
-                $window.localStorage.removeItem('token');
-            }
-        };
-
-        return authTokenFactory;
     })
     .factory('AuthInterceptor', function ($q, $location, AuthToken) {
         var interceptorFactory = {};

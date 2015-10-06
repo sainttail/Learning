@@ -36,8 +36,9 @@ app.use(morgan('dev'));
 var apiRouter = require('./app/routes/api')(app, express);
 app.use('/api', apiRouter);
 
-app.get('*', function (req, res) {
-    res.sendFile(path.join(__dirname + '/public/app/views/index.html'));
+app.use(express.static(__dirname + '/public'));
+app.get('/', function (req, res) {
+    res.sendFile(path.join(__dirname + '/public/app/index.html'));
 });
 
 app.listen(port);
