@@ -3,12 +3,27 @@
 <head>
     <!-- Use the 'title' property to render a page title  -->
     <title><%= title %></title>
+    <script type="text/javascript" src="/lib/angular/angular.js"></script>
+    <script type="text/javascript" src="/example/example.client.module.js"></script>
+    <script type="text/javascript" src="/example/controllers/example.client.controller.js"></script>
+    <script type="text/javascript" src="/app.js"></script>
 </head>
 <body>
-<!-- Load the static image file  -->
-<img src="img/logo.jpg" alt="Logo">
 
 <!-- Use the 'title' property to render a title element  -->
+<% if ( userFullName ) { %>
+<h2>Hello <%= userFullName %> </h2>
+<a href="/signout">Sign out</a>
+<% } else { %>
+<a href="/signup">Signup</a>
+<a href="/signin">Signin</a>
+<% } %>
+
+<section ng-include="'example/views/example.client.view.html'"></section>
+
 <h1><%= title %></h1>
+
+<!-- Load the static image file  -->
+<img src="img/logo.jpg" alt="Logo">
 </body>
 </html>

@@ -2,6 +2,7 @@
  * Created by Eakawat on 10/6/2015 AD.
  */
 var mongoose = require('mongoose'),
+    crypto = require('crypto'),
     Schema = mongoose.Schema;
 
 var UserSchema = new Schema({
@@ -10,13 +11,13 @@ var UserSchema = new Schema({
     email: {
         type: String,
         index: true,
-        match: /.+\@.+\..+/
+        match: [/.+\@.+\..+/, "Please fill a valid e-mail address"]
     },
     username: {
         type: String,
         trim: true,
         unique: true,
-        required: true
+        required: "Username is required"
     },
     password: {
         type: String,
@@ -27,13 +28,24 @@ var UserSchema = new Schema({
             "Password should be longer"
         ]
     },
-    role: {
-        type: String,
-        enum: ['Admin', 'Owner', 'User']
+    salt: {
+        type: String
     },
+    provider: {
+        type: String,
+        required: "Provider is required"
+    },
+    providerId: String,
+    providerData: {},
     created: {
         type: Date,
         default: Date.now
+    }
+
+    // Example schema
+    /*role: {
+        type: String,
+        enum: ['Admin', 'Owner', 'User']
     },
     website: {
         type: String,
@@ -47,7 +59,7 @@ var UserSchema = new Schema({
                 return url;
             }
         }
-    }
+    }*/
 });
 
 UserSchema.virtual('fullName').get(function () {
@@ -58,14 +70,46 @@ UserSchema.virtual('fullName').get(function () {
     this.lastName = splitName[1] || '';
 });
 
-UserSchema.set('toJSON', {getters: true, virtuals: true});
+UserSchema.pre('save', function (next) {
+    if (this.password) {
+        this.salt = new Buffer(crypto.randomBytes(16).toString('base64'), 'base64');
+        this.password = this.hashPassword(this.password);
+    }
+
+    next();
+});
+
+UserSchema.methods.hashPassword = function (password) {
+    return crypto.pbkdf2Sync(password, this.salt, 10000, 64).toString('base64');
+};
+
+UserSchema.methods.authenticate = function (password) {
+    return this.password === this.hashPassword(password);
+};
 
 UserSchema.statics.findOneByUsername = function (username, callback) {
     this.findOne({username: new RegExp(username, 'i')}, callback);
 };
 
-UserSchema.methods.authenticate = function (password) {
-    return this.password === password;
+UserSchema.statics.findUniqueUsername = function (username, suffix, callback) {
+    var _this = this;
+    var possibleUsername = username + (suffix || '');
+
+    _this.findOne({
+        username: possibleUsername
+    }, function (err, user) {
+        if (!err) {
+            if (!user) {
+                callback(possibleUsername);
+            } else {
+                return _this.findUniqueUsername(username, (suffix || 0) + 1, callback);
+            }
+        } else {
+            callback(null);
+        }
+    });
 };
+
+UserSchema.set('toJSON', {getters: true, virtuals: true});
 
 mongoose.model('User', UserSchema);
